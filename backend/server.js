@@ -14,8 +14,16 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const CONFIG_PATH = path.join(__dirname, 'config.json');
 function loadConfig() {
-  try { return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8')); }
-  catch { return {}; }
+  let cfg = {};
+  try { cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8')); } catch {}
+  // Override folder IDs from env vars if set (Railway Variables)
+  if (process.env.WORK_FOLDER_ID) cfg.workFolderId = process.env.WORK_FOLDER_ID;
+  if (process.env.EDU_FOLDER_ID)  cfg.eduFolderId  = process.env.EDU_FOLDER_ID;
+  if (process.env.MASTER_NAME)    cfg.masterName   = process.env.MASTER_NAME;
+  if (process.env.MASTER_CITY)    cfg.city         = process.env.MASTER_CITY;
+  if (process.env.MASTER_PRICE)   cfg.price        = process.env.MASTER_PRICE;
+  if (process.env.MASTER_TONE)    cfg.tone         = process.env.MASTER_TONE;
+  return cfg;
 }
 function saveConfig(cfg) {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
